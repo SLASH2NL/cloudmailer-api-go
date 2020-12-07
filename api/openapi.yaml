@@ -1,0 +1,2500 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: support@slash2.nl
+  description: |-
+    Reference for the public Cloudmailer API calls.
+
+    Generated packages use semantic versioning since 2.0.0. The endpoints (v1) itself should always be backwards compatible.
+
+    The API uses rate limiting based on requests per minute. Every API response contains the following two headers: 'X-RateLimit-Limit', 'X-RateLimit-Remaining'. `X-RateLimit-Limit` indicates the request limit per minute. `X-RateLimit-Remaining` indicates the amount of available requests.
+  title: Cloudmailer
+  version: 3.0.0
+servers:
+- url: https://app.cloudmailer.nl/api/v1
+tags:
+- description: Send and track automations
+  name: Automation
+- description: Subscribe and retrieve members
+  name: Member
+- description: Retrieve and import groups
+  name: Group
+- description: Manage flows in the system
+  name: Flow
+- description: Manage events in the system
+  name: Event
+paths:
+  /automations:
+    get:
+      operationId: automation-index
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        schema:
+          type: integer
+      - description: Search string
+        in: query
+        name: search
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationIndexResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+      security:
+      - BearerAuth: []
+      summary: Get automations paginated
+      tags:
+      - Automation
+  /automations/{internName}/name:
+    get:
+      operationId: automation-intern-name
+      parameters:
+      - description: Internal name of the automation
+        in: path
+        name: internName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationShowNameResponse'
+          description: Success
+        "404":
+          content: {}
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Show automation using the internal name
+      tags:
+      - Automation
+  /automations/{internName}/send:
+    post:
+      operationId: automation-send
+      parameters:
+      - description: Internal name of the automation
+        in: path
+        name: internName
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutomationSendRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationSendResponse'
+          description: Success
+        "400":
+          content: {}
+          description: Validation incorrect
+        "404":
+          content: {}
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Send an automation
+      tags:
+      - Automation
+      x-codegen-request-body-name: body
+  /automations/track/{trackId}/id:
+    get:
+      operationId: automation-track-id
+      parameters:
+      - description: Track ID of the automation
+        in: path
+        name: trackId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationTrackIdResponse'
+          description: Success
+        "404":
+          content: {}
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Track automation by ID
+      tags:
+      - Automation
+  /automations/track/{trackRef}/ref:
+    get:
+      operationId: automation-track-ref
+      parameters:
+      - description: Track reference of the automation
+        in: path
+        name: trackRef
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationTrackRefResponse'
+          description: Success
+        "404":
+          content: {}
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Track automation by reference
+      tags:
+      - Automation
+  /events/order-created/trigger:
+    post:
+      operationId: event-trigger-order-created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventOrderRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTriggerResponse'
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultValidationErrorResponse'
+          description: Validation incorrect
+        "404":
+          content: {}
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Trigger the order created event
+      tags:
+      - Event
+      x-codegen-request-body-name: body
+  /events/order-paid/trigger:
+    post:
+      operationId: event-trigger-order-paid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventOrderRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTriggerResponse'
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultValidationErrorResponse'
+          description: Validation incorrect
+        "404":
+          content: {}
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Trigger the order paid event
+      tags:
+      - Event
+      x-codegen-request-body-name: body
+  /events/generic/trigger:
+    post:
+      operationId: event-trigger-generic
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventGenericRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTriggerResponse'
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultValidationErrorResponse'
+          description: Validation incorrect
+        "404":
+          content: {}
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Trigger a generic event
+      tags:
+      - Event
+      x-codegen-request-body-name: body
+  /flow-configs/{id}/trigger:
+    post:
+      operationId: flow-config-trigger"
+      parameters:
+      - description: ID of the flow config
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowConfigTriggerRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowConfigTriggerResponse'
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultValidationErrorResponse'
+          description: Validation incorrect
+        "404":
+          content: {}
+          description: Not found
+      security:
+      - BearerAuth: []
+      summary: Trigger a specific flow config
+      tags:
+      - Flow
+      x-codegen-request-body-name: body
+  /groups:
+    get:
+      operationId: group-index
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        schema:
+          type: integer
+      - description: Search string
+        in: query
+        name: search
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupIndexResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+      security:
+      - BearerAuth: []
+      summary: Get groups paginated
+      tags:
+      - Group
+  /groups/{id}/members:
+    get:
+      operationId: group-index-member
+      parameters:
+      - description: ID of the group
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: Page number
+        in: query
+        name: page
+        schema:
+          type: integer
+      - description: Search string
+        in: query
+        name: search
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupMemberIndexResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+        "404":
+          content: {}
+          description: Group not found
+      security:
+      - BearerAuth: []
+      summary: Get members in group paginated
+      tags:
+      - Group
+  /groups/{id}/import:
+    post:
+      operationId: group-import-json
+      parameters:
+      - description: ID of the group
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupImportRequest'
+        required: true
+      responses:
+        "200":
+          content: {}
+          description: Success
+        "400":
+          content: {}
+          description: Failure
+      security:
+      - BearerAuth: []
+      summary: Import JSON into a group
+      tags:
+      - Group
+      x-codegen-request-body-name: body
+  /members/unvalidated:
+    post:
+      description: The meta_fields, groups and automation items are optional. Automation
+        defines the mail to be sent with the link to validate the member.
+      operationId: member-store-unvalidated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberStoreRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberStoreResponse'
+          description: Success
+        "400":
+          content: {}
+          description: Member validation or automation incorrect
+      security:
+      - BearerAuth: []
+      summary: Subscribe and send validation email
+      tags:
+      - Member
+      x-codegen-request-body-name: body
+  /members/validated:
+    post:
+      description: The meta_fields and groups items are optional. The automation item
+        is irrelevant. The member will be validated straight away and no mail will
+        be sent.
+      operationId: member-store-validated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberStoreRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberStoreResponse'
+          description: Success
+        "400":
+          content: {}
+          description: Member validation incorrect
+      security:
+      - BearerAuth: []
+      summary: Subscribe a member without a validation email
+      tags:
+      - Member
+      x-codegen-request-body-name: body
+  /members/unsubscribe:
+    post:
+      description: The groups item is optional. Without any group the member will
+        be blacklisted for the client. This means the member is still visible inside
+        the group, but will not receive any campaigns.
+      operationId: member-unsubscribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberUnsubscribeRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberUnsubscribeResponse'
+          description: Success
+        "400":
+          content: {}
+          description: Validation incorrect
+        "404":
+          content: {}
+          description: Member not found
+      security:
+      - BearerAuth: []
+      summary: Unsubscribe a member from a client or groups
+      tags:
+      - Member
+      x-codegen-request-body-name: body
+  /members/{id}:
+    delete:
+      operationId: member-delete
+      parameters:
+      - description: ID of the member
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+        "404":
+          content: {}
+          description: Member not found
+      security:
+      - BearerAuth: []
+      summary: Delete a member by ID
+      tags:
+      - Member
+    get:
+      operationId: member-show
+      parameters:
+      - description: ID of the member
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+        "404":
+          content: {}
+          description: Member not found
+      security:
+      - BearerAuth: []
+      summary: Get a member by ID
+      tags:
+      - Member
+    put:
+      operationId: member-update
+      parameters:
+      - description: ID of the member
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberUpdateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberUpdateResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+        "404":
+          content: {}
+          description: Member not found
+      security:
+      - BearerAuth: []
+      summary: Update a member by ID
+      tags:
+      - Member
+      x-codegen-request-body-name: body
+  /members/{email}/email:
+    delete:
+      operationId: member-delete-email
+      parameters:
+      - description: Email address of the member
+        in: path
+        name: email
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+        "404":
+          content: {}
+          description: Member not found
+      security:
+      - BearerAuth: []
+      summary: Delete a member by email
+      tags:
+      - Member
+    get:
+      operationId: member-show-email
+      parameters:
+      - description: Email address of the member
+        in: path
+        name: email
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+        "404":
+          content: {}
+          description: Member not found
+      security:
+      - BearerAuth: []
+      summary: Get a member by email
+      tags:
+      - Member
+    put:
+      operationId: member-update-email
+      parameters:
+      - description: Email address of the member
+        in: path
+        name: email
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberUpdateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberUpdateResponse'
+          description: Success
+        "204":
+          content: {}
+          description: No results
+        "404":
+          content: {}
+          description: Member not found
+      security:
+      - BearerAuth: []
+      summary: Update a member by email
+      tags:
+      - Member
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    AutomationSendRequest:
+      example:
+        recipients:
+        - reply_to_email: reply_to_email
+          preview_text: preview_text
+          from_email: from_email
+          attachments:
+          - mime: mime
+            base64: base64
+            name: name
+          - mime: mime
+            base64: base64
+            name: name
+          subject: subject
+          reply_to_name: reply_to_name
+          track_ref: track_ref
+          replacements:
+            full_name: Jeffrey Zant
+            image:
+              url: https://placehold.it/400x400
+              alt: Image information
+              action: https://www.cloudmailer.nl
+          from_name: from_name
+          email: email
+        - reply_to_email: reply_to_email
+          preview_text: preview_text
+          from_email: from_email
+          attachments:
+          - mime: mime
+            base64: base64
+            name: name
+          - mime: mime
+            base64: base64
+            name: name
+          subject: subject
+          reply_to_name: reply_to_name
+          track_ref: track_ref
+          replacements:
+            full_name: Jeffrey Zant
+            image:
+              url: https://placehold.it/400x400
+              alt: Image information
+              action: https://www.cloudmailer.nl
+          from_name: from_name
+          email: email
+      properties:
+        recipients:
+          items:
+            $ref: '#/components/schemas/AutomationSendRequest_recipients'
+          type: array
+      type: object
+    EventOrderRequest:
+      example:
+        payload:
+          delivery_address:
+            attn: attn
+            zipcode: zipcode
+            country: country
+            city: city
+            street: street
+            name: name
+            company: company
+            title: title
+            type: type
+          billing_address:
+            attn: attn
+            zipcode: zipcode
+            country: country
+            city: city
+            street: street
+            name: name
+            company: company
+            title: title
+            type: type
+          locale: locale
+          order:
+            price_excl_tax: 6
+            price: 0
+            order_lines: '{}'
+            currency: currency
+            id: id
+        email: email
+      properties:
+        email:
+          maxLength: 255
+          type: string
+        payload:
+          $ref: '#/components/schemas/EventOrderRequest_payload'
+      type: object
+    EventOrderTrackAndTraceRequest:
+      properties:
+        email:
+          maxLength: 255
+          type: string
+        payload:
+          $ref: '#/components/schemas/EventOrderTrackAndTraceRequest_payload'
+      type: object
+    EventGenericRequest:
+      example:
+        identifier: identifier
+        payload:
+          client: Cloudmailer
+          activation_url: https://www.cloudmailer.nl
+        email: email
+      properties:
+        identifier:
+          description: Specific identifier for a generic event
+          type: string
+        email:
+          maxLength: 255
+          type: string
+        payload:
+          example:
+            client: Cloudmailer
+            activation_url: https://www.cloudmailer.nl
+          properties: {}
+          type: object
+      type: object
+    FlowConfigRequestGroup:
+      example:
+        id: 0
+      properties:
+        id:
+          type: integer
+      type: object
+    FlowConfigRequestDynamicGroup:
+      example:
+        id: 6
+      properties:
+        id:
+          type: integer
+      type: object
+    FlowConfigTriggerRequest:
+      example:
+        dynamic_groups:
+        - id: 6
+        - id: 6
+        payload:
+          client: Cloudmailer
+          activation_url: https://www.cloudmailer.nl
+        groups:
+        - id: 0
+        - id: 0
+      properties:
+        groups:
+          items:
+            $ref: '#/components/schemas/FlowConfigRequestGroup'
+          type: array
+        dynamic_groups:
+          items:
+            $ref: '#/components/schemas/FlowConfigRequestDynamicGroup'
+          type: array
+        payload:
+          example:
+            client: Cloudmailer
+            activation_url: https://www.cloudmailer.nl
+          properties: {}
+          type: object
+      type: object
+    GroupImportRequest:
+      example:
+        members:
+        - meta_fields:
+          - intern_name: intern_name
+            value: value
+          - intern_name: intern_name
+            value: value
+          email: email
+        - meta_fields:
+          - intern_name: intern_name
+            value: value
+          - intern_name: intern_name
+            value: value
+          email: email
+      properties:
+        members:
+          items:
+            $ref: '#/components/schemas/GroupImportRequest_members'
+          type: array
+      type: object
+    MemberRequestGroup:
+      example:
+        id: 0
+      properties:
+        id:
+          type: integer
+      type: object
+    MemberRequestMetaField:
+      example:
+        intern_name: intern_name
+        value: value
+      properties:
+        intern_name:
+          type: string
+        value:
+          type: string
+      type: object
+    MemberStoreRequest:
+      example:
+        meta_fields:
+        - intern_name: intern_name
+          value: value
+        - intern_name: intern_name
+          value: value
+        automation:
+          intern_name: intern_name
+        groups:
+        - id: 0
+        - id: 0
+        email: email
+      properties:
+        email:
+          maxLength: 255
+          type: string
+        meta_fields:
+          items:
+            $ref: '#/components/schemas/MemberRequestMetaField'
+          type: array
+        groups:
+          items:
+            $ref: '#/components/schemas/MemberRequestGroup'
+          type: array
+        automation:
+          $ref: '#/components/schemas/MemberStoreRequest_automation'
+      type: object
+    MemberUpdateRequest:
+      example:
+        meta_fields:
+        - intern_name: intern_name
+          value: value
+        - intern_name: intern_name
+          value: value
+        email: email
+      properties:
+        email:
+          maxLength: 255
+          type: string
+        meta_fields:
+          items:
+            $ref: '#/components/schemas/MemberRequestMetaField'
+          type: array
+      type: object
+    MemberUnsubscribeRequest:
+      example:
+        groups:
+        - id: 0
+        - id: 0
+        email: email
+      properties:
+        email:
+          maxLength: 255
+          type: string
+        groups:
+          items:
+            $ref: '#/components/schemas/MemberRequestGroup'
+          type: array
+      type: object
+    ReplacementAddress:
+      example:
+        attn: attn
+        zipcode: zipcode
+        country: country
+        city: city
+        street: street
+        name: name
+        company: company
+        title: title
+        type: type
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        attn:
+          type: string
+        company:
+          type: string
+        name:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        zipcode:
+          type: string
+        country:
+          type: string
+      type: object
+    ReplacementCoupon:
+      properties:
+        code:
+          type: string
+        type:
+          type: string
+        value:
+          type: number
+        currency:
+          type: string
+        valid_from:
+          type: string
+        valid_till:
+          type: string
+      type: object
+    ReplacementImage:
+      properties:
+        url:
+          type: string
+        alt:
+          type: string
+        action:
+          type: string
+      type: object
+    ReplacementOrderLine:
+      properties:
+        type:
+          type: string
+        sku:
+          type: string
+        image:
+          type: string
+        url:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+        sale_price:
+          type: integer
+        qty:
+          type: integer
+        total:
+          type: integer
+        important:
+          type: boolean
+      type: object
+    ReplacementOrder:
+      example:
+        price_excl_tax: 6
+        price: 0
+        order_lines: '{}'
+        currency: currency
+        id: id
+      properties:
+        id:
+          type: string
+        currency:
+          type: string
+        price:
+          type: integer
+        price_excl_tax:
+          type: integer
+        order_lines:
+          properties: {}
+          type: object
+      type: object
+    ResponseAutomation:
+      properties:
+        id:
+          type: integer
+        intern_name:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        preview_text:
+          type: string
+        total_mails_sent:
+          type: integer
+        wizard_step_name:
+          type: string
+        client_id:
+          type: integer
+        locale:
+          type: string
+        testing_email:
+          type: string
+        has_online_view:
+          type: boolean
+        has_unsubscribe:
+          type: boolean
+        has_tracking:
+          type: boolean
+        has_label:
+          type: boolean
+        has_utm:
+          type: boolean
+        is_testing:
+          type: boolean
+        is_published:
+          type: boolean
+        is_system_default:
+          type: boolean
+        replacements:
+          items:
+            $ref: '#/components/schemas/ResponseAutomation_replacements'
+          type: array
+        view_url:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    ResponseBounce:
+      properties:
+        diagnostic_code:
+          type: string
+        is_hard:
+          type: boolean
+        is_handled:
+          type: boolean
+        is_invalidated:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    ResponseCampaign:
+      properties:
+        id:
+          type: integer
+        intern_name:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        preview_text:
+          type: string
+        total_mails_to_send:
+          type: integer
+        total_mails_sent:
+          type: integer
+        status:
+          type: string
+        wizard_step_name:
+          type: string
+        is_schedule:
+          type: boolean
+        schedule_time:
+          type: string
+        sent_at:
+          type: string
+        locale:
+          type: string
+        has_online_view:
+          type: boolean
+        has_unsubscribe:
+          type: boolean
+        has_tracking:
+          type: boolean
+        has_label:
+          type: boolean
+        has_utm:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    ResponseClick:
+      properties:
+        ip:
+          type: string
+        accept_language:
+          type: string
+        user_agent:
+          type: string
+        created_at:
+          type: string
+      type: object
+    ResponseClient:
+      properties:
+        name:
+          type: string
+        timezone:
+          type: string
+        email_credits:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    ResponseGroup:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        unsubscribe_title:
+          type: string
+        unsubscribe_text:
+          type: string
+        members_count:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    ResponseMail:
+      properties:
+        email:
+          type: string
+        subject:
+          type: string
+        preview_text:
+          type: string
+        from_email:
+          type: string
+        from_name:
+          type: string
+        reply_to_name:
+          type: string
+        reply_to_email:
+          type: string
+        replacements:
+          properties: {}
+          type: object
+        attachment_count:
+          type: integer
+        track_id:
+          type: string
+        track_ref:
+          type: string
+        delivered_at:
+          type: string
+        created_at:
+          type: string
+      type: object
+    ResponseMember:
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        is_blacklisted:
+          type: boolean
+        validated_at:
+          type: string
+        requested_validation_at:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    ResponseMetaField:
+      properties:
+        intern_name:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+      type: object
+    ResponseOpen:
+      properties:
+        ip:
+          type: string
+        accept_language:
+          type: string
+        user_agent:
+          type: string
+        created_at:
+          type: string
+      type: object
+    ResponseRecipient:
+      properties:
+        email:
+          type: string
+        track_id:
+          type: string
+      type: object
+    ResponseReplacement:
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        required:
+          type: boolean
+      type: object
+    ResponseTemplate:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    AutomationIndexResponse:
+      example:
+        per_page: 9
+        filterable:
+        - filterable
+        - filterable
+        data:
+        - template:
+            updated_at: updated_at
+            name: name
+            created_at: created_at
+            id: 5
+            type: type
+          testing_email: testing_email
+          preview_text: preview_text
+          intern_name: intern_name
+          subject: subject
+          has_utm: true
+          is_published: true
+          has_label: true
+          created_at: created_at
+          locale: locale
+          has_online_view: true
+          has_tracking: true
+          client_id: 5
+          updated_at: updated_at
+          wizard_step_name: wizard_step_name
+          has_unsubscribe: true
+          name: name
+          total_mails_sent: 1
+          view_url: view_url
+          id: 6
+          is_system_default: true
+          replacements:
+          - name: name
+            type: type
+            required: true
+          - name: name
+            type: type
+            required: true
+          is_testing: true
+        - template:
+            updated_at: updated_at
+            name: name
+            created_at: created_at
+            id: 5
+            type: type
+          testing_email: testing_email
+          preview_text: preview_text
+          intern_name: intern_name
+          subject: subject
+          has_utm: true
+          is_published: true
+          has_label: true
+          created_at: created_at
+          locale: locale
+          has_online_view: true
+          has_tracking: true
+          client_id: 5
+          updated_at: updated_at
+          wizard_step_name: wizard_step_name
+          has_unsubscribe: true
+          name: name
+          total_mails_sent: 1
+          view_url: view_url
+          id: 6
+          is_system_default: true
+          replacements:
+          - name: name
+            type: type
+            required: true
+          - name: name
+            type: type
+            required: true
+          is_testing: true
+        last_page: 7
+        next_page_url: next_page_url
+        sortable:
+        - sortable
+        - sortable
+        prev_page_url: prev_page_url
+        first_page_url: first_page_url
+        path: path
+        total: 2
+        last_page_url: last_page_url
+        from: 2
+        to: 3
+        current_page: 0
+      properties:
+        current_page:
+          type: integer
+        data:
+          items:
+            $ref: '#/components/schemas/AutomationIndexResponse_data'
+          type: array
+        first_page_url:
+          type: string
+        from:
+          type: integer
+        last_page:
+          type: integer
+        last_page_url:
+          type: string
+        next_page_url:
+          type: string
+        path:
+          type: string
+        per_page:
+          type: integer
+        prev_page_url:
+          type: string
+        to:
+          type: integer
+        total:
+          type: integer
+        sortable:
+          items:
+            type: string
+          type: array
+        filterable:
+          items:
+            type: string
+          type: array
+      type: object
+    AutomationSendResponse:
+      example:
+        msg: '{}'
+        data:
+        - track_id: track_id
+          email: email
+        - track_id: track_id
+          email: email
+      properties:
+        msg:
+          properties: {}
+          type: object
+        data:
+          items:
+            $ref: '#/components/schemas/AutomationSendResponse_data'
+          type: array
+      type: object
+    AutomationShowNameResponse:
+      example:
+        data:
+          testing_email: testing_email
+          preview_text: preview_text
+          intern_name: intern_name
+          subject: subject
+          has_utm: true
+          is_published: true
+          has_label: true
+          created_at: created_at
+          locale: locale
+          has_online_view: true
+          has_tracking: true
+          client_id: 1
+          updated_at: updated_at
+          wizard_step_name: wizard_step_name
+          has_unsubscribe: true
+          name: name
+          total_mails_sent: 6
+          view_url: view_url
+          id: 0
+          is_system_default: true
+          replacements:
+          - name: name
+            type: type
+            required: true
+          - name: name
+            type: type
+            required: true
+          is_testing: true
+      properties:
+        data:
+          $ref: '#/components/schemas/AutomationShowNameResponse_data'
+      type: object
+    AutomationTrackIdResponse:
+      example:
+        data:
+          preview_text: preview_text
+          from_email: from_email
+          subject: subject
+          created_at: created_at
+          from_name: from_name
+          reply_to_email: reply_to_email
+          reply_to_name: reply_to_name
+          track_id: track_id
+          opens:
+          - ip: ip
+            accept_language: accept_language
+            created_at: created_at
+            user_agent: user_agent
+          - ip: ip
+            accept_language: accept_language
+            created_at: created_at
+            user_agent: user_agent
+          track_ref: track_ref
+          replacements: '{}'
+          bounces:
+          - is_invalidated: true
+            diagnostic_code: diagnostic_code
+            updated_at: updated_at
+            is_hard: true
+            created_at: created_at
+            is_handled: true
+          - is_invalidated: true
+            diagnostic_code: diagnostic_code
+            updated_at: updated_at
+            is_hard: true
+            created_at: created_at
+            is_handled: true
+          attachment_count: 0
+          delivered_at: delivered_at
+          email: email
+      properties:
+        data:
+          $ref: '#/components/schemas/AutomationTrackIdResponse_data'
+      type: object
+    AutomationTrackRefResponse:
+      example:
+        data:
+        - preview_text: preview_text
+          from_email: from_email
+          subject: subject
+          created_at: created_at
+          from_name: from_name
+          reply_to_email: reply_to_email
+          reply_to_name: reply_to_name
+          track_id: track_id
+          opens:
+          - ip: ip
+            accept_language: accept_language
+            created_at: created_at
+            user_agent: user_agent
+          - ip: ip
+            accept_language: accept_language
+            created_at: created_at
+            user_agent: user_agent
+          track_ref: track_ref
+          replacements: '{}'
+          bounces:
+          - is_invalidated: true
+            diagnostic_code: diagnostic_code
+            updated_at: updated_at
+            is_hard: true
+            created_at: created_at
+            is_handled: true
+          - is_invalidated: true
+            diagnostic_code: diagnostic_code
+            updated_at: updated_at
+            is_hard: true
+            created_at: created_at
+            is_handled: true
+          attachment_count: 0
+          delivered_at: delivered_at
+          email: email
+        - preview_text: preview_text
+          from_email: from_email
+          subject: subject
+          created_at: created_at
+          from_name: from_name
+          reply_to_email: reply_to_email
+          reply_to_name: reply_to_name
+          track_id: track_id
+          opens:
+          - ip: ip
+            accept_language: accept_language
+            created_at: created_at
+            user_agent: user_agent
+          - ip: ip
+            accept_language: accept_language
+            created_at: created_at
+            user_agent: user_agent
+          track_ref: track_ref
+          replacements: '{}'
+          bounces:
+          - is_invalidated: true
+            diagnostic_code: diagnostic_code
+            updated_at: updated_at
+            is_hard: true
+            created_at: created_at
+            is_handled: true
+          - is_invalidated: true
+            diagnostic_code: diagnostic_code
+            updated_at: updated_at
+            is_hard: true
+            created_at: created_at
+            is_handled: true
+          attachment_count: 0
+          delivered_at: delivered_at
+          email: email
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/AutomationTrackIdResponse_data'
+          type: array
+      type: object
+    DefaultValidationErrorResponse:
+      properties:
+        msg:
+          properties: {}
+          type: object
+      type: object
+    EventTriggerResponse:
+      example:
+        msg: '{}'
+      properties:
+        msg:
+          properties: {}
+          type: object
+      type: object
+    FlowConfigTriggerResponse:
+      example:
+        msg: '{}'
+      properties:
+        msg:
+          properties: {}
+          type: object
+      type: object
+    GroupIndexResponse:
+      example:
+        per_page: 2
+        data:
+        - unsubscribe_text: unsubscribe_text
+          updated_at: updated_at
+          name: name
+          unsubscribe_title: unsubscribe_title
+          created_at: created_at
+          members_count: 1
+          id: 6
+        - unsubscribe_text: unsubscribe_text
+          updated_at: updated_at
+          name: name
+          unsubscribe_title: unsubscribe_title
+          created_at: created_at
+          members_count: 1
+          id: 6
+        last_page: 5
+        next_page_url: next_page_url
+        sortable:
+        - sortable
+        - sortable
+        prev_page_url: prev_page_url
+        first_page_url: first_page_url
+        path: path
+        total: 9
+        last_page_url: last_page_url
+        from: 5
+        to: 7
+        current_page: 0
+      properties:
+        current_page:
+          type: integer
+        data:
+          items:
+            $ref: '#/components/schemas/GroupIndexResponse_data'
+          type: array
+        first_page_url:
+          type: string
+        from:
+          type: integer
+        last_page:
+          type: integer
+        last_page_url:
+          type: string
+        next_page_url:
+          type: string
+        path:
+          type: string
+        per_page:
+          type: integer
+        prev_page_url:
+          type: string
+        to:
+          type: integer
+        total:
+          type: integer
+        sortable:
+          items:
+            type: string
+          type: array
+      type: object
+    GroupMemberIndexResponse:
+      example:
+        per_page: 5
+        data:
+        - meta_fields:
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          requested_validation_at: requested_validation_at
+          updated_at: updated_at
+          is_blacklisted: true
+          created_at: created_at
+          id: 6
+          validated_at: validated_at
+          email: email
+        - meta_fields:
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          requested_validation_at: requested_validation_at
+          updated_at: updated_at
+          is_blacklisted: true
+          created_at: created_at
+          id: 6
+          validated_at: validated_at
+          email: email
+        last_page: 5
+        next_page_url: next_page_url
+        sortable:
+        - sortable
+        - sortable
+        prev_page_url: prev_page_url
+        first_page_url: first_page_url
+        path: path
+        total: 7
+        last_page_url: last_page_url
+        from: 1
+        to: 2
+        current_page: 0
+      properties:
+        current_page:
+          type: integer
+        data:
+          items:
+            $ref: '#/components/schemas/GroupMemberIndexResponse_data'
+          type: array
+        first_page_url:
+          type: string
+        from:
+          type: integer
+        last_page:
+          type: integer
+        last_page_url:
+          type: string
+        next_page_url:
+          type: string
+        path:
+          type: string
+        per_page:
+          type: integer
+        prev_page_url:
+          type: string
+        to:
+          type: integer
+        total:
+          type: integer
+        sortable:
+          items:
+            type: string
+          type: array
+      type: object
+    MemberResponse:
+      example:
+        data:
+          meta_fields:
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          requested_validation_at: requested_validation_at
+          updated_at: updated_at
+          is_blacklisted: true
+          created_at: created_at
+          groups:
+          - unsubscribe_text: unsubscribe_text
+            updated_at: updated_at
+            name: name
+            unsubscribe_title: unsubscribe_title
+            created_at: created_at
+            members_count: 1
+            id: 6
+          - unsubscribe_text: unsubscribe_text
+            updated_at: updated_at
+            name: name
+            unsubscribe_title: unsubscribe_title
+            created_at: created_at
+            members_count: 1
+            id: 6
+          id: 0
+          validated_at: validated_at
+          email: email
+      properties:
+        data:
+          $ref: '#/components/schemas/MemberResponse_data'
+      type: object
+    MemberStoreResponse:
+      example:
+        msg: '{}'
+        data:
+          meta_fields:
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          requested_validation_at: requested_validation_at
+          updated_at: updated_at
+          is_blacklisted: true
+          created_at: created_at
+          groups:
+          - unsubscribe_text: unsubscribe_text
+            updated_at: updated_at
+            name: name
+            unsubscribe_title: unsubscribe_title
+            created_at: created_at
+            members_count: 1
+            id: 6
+          - unsubscribe_text: unsubscribe_text
+            updated_at: updated_at
+            name: name
+            unsubscribe_title: unsubscribe_title
+            created_at: created_at
+            members_count: 1
+            id: 6
+          id: 0
+          validated_at: validated_at
+          email: email
+      properties:
+        msg:
+          properties: {}
+          type: object
+        data:
+          $ref: '#/components/schemas/MemberResponse_data'
+      type: object
+    MemberUnsubscribeResponse:
+      example:
+        msg: '{}'
+        data:
+          meta_fields:
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          requested_validation_at: requested_validation_at
+          updated_at: updated_at
+          is_blacklisted: true
+          created_at: created_at
+          groups:
+          - unsubscribe_text: unsubscribe_text
+            updated_at: updated_at
+            name: name
+            unsubscribe_title: unsubscribe_title
+            created_at: created_at
+            members_count: 1
+            id: 6
+          - unsubscribe_text: unsubscribe_text
+            updated_at: updated_at
+            name: name
+            unsubscribe_title: unsubscribe_title
+            created_at: created_at
+            members_count: 1
+            id: 6
+          id: 0
+          validated_at: validated_at
+          email: email
+      properties:
+        msg:
+          properties: {}
+          type: object
+        data:
+          $ref: '#/components/schemas/MemberResponse_data'
+      type: object
+    MemberUpdateResponse:
+      example:
+        msg: '{}'
+        data:
+          meta_fields:
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          - intern_name: intern_name
+            name: name
+            type: type
+            value: value
+          requested_validation_at: requested_validation_at
+          updated_at: updated_at
+          is_blacklisted: true
+          created_at: created_at
+          groups:
+          - unsubscribe_text: unsubscribe_text
+            updated_at: updated_at
+            name: name
+            unsubscribe_title: unsubscribe_title
+            created_at: created_at
+            members_count: 1
+            id: 6
+          - unsubscribe_text: unsubscribe_text
+            updated_at: updated_at
+            name: name
+            unsubscribe_title: unsubscribe_title
+            created_at: created_at
+            members_count: 1
+            id: 6
+          id: 0
+          validated_at: validated_at
+          email: email
+      properties:
+        msg:
+          properties: {}
+          type: object
+        data:
+          $ref: '#/components/schemas/MemberResponse_data'
+      type: object
+    MessageResponse:
+      example:
+        msg: '{}'
+      properties:
+        msg:
+          properties: {}
+          type: object
+      type: object
+    AutomationSendRequest_attachments:
+      example:
+        mime: mime
+        base64: base64
+        name: name
+      properties:
+        base64:
+          type: string
+        name:
+          maxLength: 255
+          type: string
+        mime:
+          type: string
+    AutomationSendRequest_recipients:
+      example:
+        reply_to_email: reply_to_email
+        preview_text: preview_text
+        from_email: from_email
+        attachments:
+        - mime: mime
+          base64: base64
+          name: name
+        - mime: mime
+          base64: base64
+          name: name
+        subject: subject
+        reply_to_name: reply_to_name
+        track_ref: track_ref
+        replacements:
+          full_name: Jeffrey Zant
+          image:
+            url: https://placehold.it/400x400
+            alt: Image information
+            action: https://www.cloudmailer.nl
+        from_name: from_name
+        email: email
+      properties:
+        email:
+          maxLength: 255
+          type: string
+        subject:
+          maxLength: 255
+          type: string
+        preview_text:
+          maxLength: 255
+          type: string
+        from_email:
+          maxLength: 255
+          type: string
+        from_name:
+          maxLength: 255
+          type: string
+        reply_to_email:
+          maxLength: 255
+          type: string
+        reply_to_name:
+          maxLength: 255
+          type: string
+        replacements:
+          example:
+            full_name: Jeffrey Zant
+            image:
+              url: https://placehold.it/400x400
+              alt: Image information
+              action: https://www.cloudmailer.nl
+          properties: {}
+          type: object
+        attachments:
+          items:
+            $ref: '#/components/schemas/AutomationSendRequest_attachments'
+          type: array
+        track_ref:
+          maxLength: 255
+          minLength: 1
+          type: string
+    EventOrderRequest_payload:
+      example:
+        delivery_address:
+          attn: attn
+          zipcode: zipcode
+          country: country
+          city: city
+          street: street
+          name: name
+          company: company
+          title: title
+          type: type
+        billing_address:
+          attn: attn
+          zipcode: zipcode
+          country: country
+          city: city
+          street: street
+          name: name
+          company: company
+          title: title
+          type: type
+        locale: locale
+        order:
+          price_excl_tax: 6
+          price: 0
+          order_lines: '{}'
+          currency: currency
+          id: id
+      properties:
+        locale:
+          description: Locale defined as ISO 639-1(nl) or the combination of ISO 639-1
+            and ISO 3166-1(nl_BE)
+          type: string
+        billing_address:
+          $ref: '#/components/schemas/ReplacementAddress'
+        delivery_address:
+          $ref: '#/components/schemas/ReplacementAddress'
+        order:
+          $ref: '#/components/schemas/ReplacementOrder'
+    EventOrderTrackAndTraceRequest_payload:
+      properties:
+        locale:
+          description: Locale defined as ISO 639-1(nl) or the combination of ISO 639-1
+            and ISO 3166-1(nl_BE)
+          type: string
+        delivery_address:
+          $ref: '#/components/schemas/ReplacementAddress'
+        order:
+          $ref: '#/components/schemas/ReplacementOrder'
+    GroupImportRequest_meta_fields:
+      example:
+        intern_name: intern_name
+        value: value
+      properties:
+        intern_name:
+          maxLength: 255
+          type: string
+        value:
+          type: string
+    GroupImportRequest_members:
+      example:
+        meta_fields:
+        - intern_name: intern_name
+          value: value
+        - intern_name: intern_name
+          value: value
+        email: email
+      properties:
+        email:
+          maxLength: 255
+          type: string
+        meta_fields:
+          items:
+            $ref: '#/components/schemas/GroupImportRequest_meta_fields'
+          type: array
+    MemberStoreRequest_automation:
+      example:
+        intern_name: intern_name
+      properties:
+        intern_name:
+          type: string
+    ResponseAutomation_replacements:
+      example:
+        name: name
+        type: type
+        required: true
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        required:
+          type: boolean
+    AutomationIndexResponse_template:
+      example:
+        updated_at: updated_at
+        name: name
+        created_at: created_at
+        id: 5
+        type: type
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    AutomationIndexResponse_data:
+      example:
+        template:
+          updated_at: updated_at
+          name: name
+          created_at: created_at
+          id: 5
+          type: type
+        testing_email: testing_email
+        preview_text: preview_text
+        intern_name: intern_name
+        subject: subject
+        has_utm: true
+        is_published: true
+        has_label: true
+        created_at: created_at
+        locale: locale
+        has_online_view: true
+        has_tracking: true
+        client_id: 5
+        updated_at: updated_at
+        wizard_step_name: wizard_step_name
+        has_unsubscribe: true
+        name: name
+        total_mails_sent: 1
+        view_url: view_url
+        id: 6
+        is_system_default: true
+        replacements:
+        - name: name
+          type: type
+          required: true
+        - name: name
+          type: type
+          required: true
+        is_testing: true
+      properties:
+        id:
+          type: integer
+        intern_name:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        preview_text:
+          type: string
+        total_mails_sent:
+          type: integer
+        wizard_step_name:
+          type: string
+        client_id:
+          type: integer
+        locale:
+          type: string
+        testing_email:
+          type: string
+        has_online_view:
+          type: boolean
+        has_unsubscribe:
+          type: boolean
+        has_tracking:
+          type: boolean
+        has_label:
+          type: boolean
+        has_utm:
+          type: boolean
+        is_testing:
+          type: boolean
+        is_published:
+          type: boolean
+        is_system_default:
+          type: boolean
+        replacements:
+          items:
+            $ref: '#/components/schemas/ResponseAutomation_replacements'
+          type: array
+        view_url:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        template:
+          $ref: '#/components/schemas/AutomationIndexResponse_template'
+    AutomationSendResponse_data:
+      example:
+        track_id: track_id
+        email: email
+      properties:
+        email:
+          type: string
+        track_id:
+          type: string
+    AutomationShowNameResponse_data:
+      example:
+        testing_email: testing_email
+        preview_text: preview_text
+        intern_name: intern_name
+        subject: subject
+        has_utm: true
+        is_published: true
+        has_label: true
+        created_at: created_at
+        locale: locale
+        has_online_view: true
+        has_tracking: true
+        client_id: 1
+        updated_at: updated_at
+        wizard_step_name: wizard_step_name
+        has_unsubscribe: true
+        name: name
+        total_mails_sent: 6
+        view_url: view_url
+        id: 0
+        is_system_default: true
+        replacements:
+        - name: name
+          type: type
+          required: true
+        - name: name
+          type: type
+          required: true
+        is_testing: true
+      properties:
+        id:
+          type: integer
+        intern_name:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        preview_text:
+          type: string
+        total_mails_sent:
+          type: integer
+        wizard_step_name:
+          type: string
+        client_id:
+          type: integer
+        locale:
+          type: string
+        testing_email:
+          type: string
+        has_online_view:
+          type: boolean
+        has_unsubscribe:
+          type: boolean
+        has_tracking:
+          type: boolean
+        has_label:
+          type: boolean
+        has_utm:
+          type: boolean
+        is_testing:
+          type: boolean
+        is_published:
+          type: boolean
+        is_system_default:
+          type: boolean
+        replacements:
+          items:
+            $ref: '#/components/schemas/ResponseAutomation_replacements'
+          type: array
+        view_url:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    AutomationTrackIdResponse_data_bounces:
+      example:
+        is_invalidated: true
+        diagnostic_code: diagnostic_code
+        updated_at: updated_at
+        is_hard: true
+        created_at: created_at
+        is_handled: true
+      properties:
+        diagnostic_code:
+          type: string
+        is_hard:
+          type: boolean
+        is_handled:
+          type: boolean
+        is_invalidated:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    AutomationTrackIdResponse_data_opens:
+      example:
+        ip: ip
+        accept_language: accept_language
+        created_at: created_at
+        user_agent: user_agent
+      properties:
+        ip:
+          type: string
+        accept_language:
+          type: string
+        user_agent:
+          type: string
+        created_at:
+          type: string
+    AutomationTrackIdResponse_data:
+      example:
+        preview_text: preview_text
+        from_email: from_email
+        subject: subject
+        created_at: created_at
+        from_name: from_name
+        reply_to_email: reply_to_email
+        reply_to_name: reply_to_name
+        track_id: track_id
+        opens:
+        - ip: ip
+          accept_language: accept_language
+          created_at: created_at
+          user_agent: user_agent
+        - ip: ip
+          accept_language: accept_language
+          created_at: created_at
+          user_agent: user_agent
+        track_ref: track_ref
+        replacements: '{}'
+        bounces:
+        - is_invalidated: true
+          diagnostic_code: diagnostic_code
+          updated_at: updated_at
+          is_hard: true
+          created_at: created_at
+          is_handled: true
+        - is_invalidated: true
+          diagnostic_code: diagnostic_code
+          updated_at: updated_at
+          is_hard: true
+          created_at: created_at
+          is_handled: true
+        attachment_count: 0
+        delivered_at: delivered_at
+        email: email
+      properties:
+        email:
+          type: string
+        subject:
+          type: string
+        preview_text:
+          type: string
+        from_email:
+          type: string
+        from_name:
+          type: string
+        reply_to_name:
+          type: string
+        reply_to_email:
+          type: string
+        replacements:
+          properties: {}
+          type: object
+        attachment_count:
+          type: integer
+        track_id:
+          type: string
+        track_ref:
+          type: string
+        delivered_at:
+          type: string
+        created_at:
+          type: string
+        bounces:
+          items:
+            $ref: '#/components/schemas/AutomationTrackIdResponse_data_bounces'
+          type: array
+        opens:
+          items:
+            $ref: '#/components/schemas/AutomationTrackIdResponse_data_opens'
+          type: array
+    GroupIndexResponse_data:
+      example:
+        unsubscribe_text: unsubscribe_text
+        updated_at: updated_at
+        name: name
+        unsubscribe_title: unsubscribe_title
+        created_at: created_at
+        members_count: 1
+        id: 6
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        unsubscribe_title:
+          type: string
+        unsubscribe_text:
+          type: string
+        members_count:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    GroupMemberIndexResponse_meta_fields:
+      example:
+        intern_name: intern_name
+        name: name
+        type: type
+        value: value
+      properties:
+        intern_name:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+    GroupMemberIndexResponse_data:
+      example:
+        meta_fields:
+        - intern_name: intern_name
+          name: name
+          type: type
+          value: value
+        - intern_name: intern_name
+          name: name
+          type: type
+          value: value
+        requested_validation_at: requested_validation_at
+        updated_at: updated_at
+        is_blacklisted: true
+        created_at: created_at
+        id: 6
+        validated_at: validated_at
+        email: email
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        is_blacklisted:
+          type: boolean
+        validated_at:
+          type: string
+        requested_validation_at:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        meta_fields:
+          items:
+            $ref: '#/components/schemas/GroupMemberIndexResponse_meta_fields'
+          type: array
+    MemberResponse_data:
+      example:
+        meta_fields:
+        - intern_name: intern_name
+          name: name
+          type: type
+          value: value
+        - intern_name: intern_name
+          name: name
+          type: type
+          value: value
+        requested_validation_at: requested_validation_at
+        updated_at: updated_at
+        is_blacklisted: true
+        created_at: created_at
+        groups:
+        - unsubscribe_text: unsubscribe_text
+          updated_at: updated_at
+          name: name
+          unsubscribe_title: unsubscribe_title
+          created_at: created_at
+          members_count: 1
+          id: 6
+        - unsubscribe_text: unsubscribe_text
+          updated_at: updated_at
+          name: name
+          unsubscribe_title: unsubscribe_title
+          created_at: created_at
+          members_count: 1
+          id: 6
+        id: 0
+        validated_at: validated_at
+        email: email
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        is_blacklisted:
+          type: boolean
+        validated_at:
+          type: string
+        requested_validation_at:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        meta_fields:
+          items:
+            $ref: '#/components/schemas/GroupMemberIndexResponse_meta_fields'
+          type: array
+        groups:
+          items:
+            $ref: '#/components/schemas/GroupIndexResponse_data'
+          type: array
+  securitySchemes:
+    BearerAuth:
+      in: header
+      name: Authorization
+      type: apiKey
